@@ -1,0 +1,58 @@
+h1,h2 {
+  font-family: Lato;
+}
+
+.button-w {width: 120px;}
+
+.box-Indigo { 
+  background-image: linear-gradient(to bottom ,#181818 ,Indigo); 
+  color: white;
+  border-radius: 0px;
+  padding: 10px;
+}
+
+.box-Thistle { 
+  background-image: linear-gradient(to bottom ,Indigo,Gold);
+  color: black;
+  border-radius: 0px;
+  padding: 40px;
+}
+
+select{ padding:5px;}
+
+option.silver:first-line{
+  box-shadow: 0 0 10px 100px Silver inset;
+  padding: 15px;
+}
+
+option.aqua:hover {
+  box-shadow: 0 0 10px 100px Aqua inset;
+}
+
+option.rblue:hover {
+  box-shadow: 0 0 10px 100px RoyalBlue inset;
+}
+
+option.mblue:hover {
+  box-shadow: 0 0 10px 100px MidnightBlue inset;
+  color: white;
+}
+
+label {
+  text-align: left;
+  width:50px;
+  display: inline-block;
+  color: white;
+}
+
+label.free {
+  width:20px;
+}
+
+label.free2 {
+  width:15px;
+}
+
+label.free3 {
+  width:10px;
+}
