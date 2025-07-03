@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Styles CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Sweetalert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.6/dist/sweetalert2.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>AIT-CIMB Support</title>
+  </head>
+  <body>
+    <center>
+      <section class="box-Indigo">
+        <h1>Online</h1>
+        <h2>Check-In | Check-Out</h2>
+      </section>
+      <section class="box-Thistle">
+        <select name="shift" id="shiftSelect" onfocus="this.size=4;" onblur="this.size=1;" onchange="this.size=4; this.blur(); checkselect()">
+          <option class="silver" value="">--Choose your work shift--</option>
+          <option class="aqua" value="9hour" Align="center">SHIFT 9:00-18:00</option>
+          <!-- <option class="rblue" value="business" Align="center">BUSINESS DAY</option> -->
+          <option class="mblue" value="12hour" Align="center">SHIFT 9:00-21:00</option>
+        </select>
+        <br><br>
+          <label class="form-check-label free2"></label>
+          <input class="form-check-input" type="radio" id="locUninet" name="select_loc" value="Uninet" checked>
+          <label class="form-check-label" for="locUninet" width="80px">Uninet</label>
+          <label class="form-check-label free3"></label>
+          <input class="form-check-input" type="radio" id="locKSL" name="select_loc" value="KSL" >
+          <label class="form-check-label" for="locKSL" width="50px">KSL</label>
+          <input class="form-check-input" type="radio" id="locWFH" name="select_loc" value="WFH">
+          <label class="form-check-label" for="locWFH" width="50px">WFH</label>
+          <input class="form-check-input" type="radio" id="locAny" name="select_loc" value="Any">
+          <label class="form-check-label" for="locAny" width="50px">Anywhere</label>
+        <br><br>
+        <div>
+          <button id="cin" type="button" class="invisible btn btn-success button-w" onclick="checkclick(); getLocation()">Check-In</button>
+          <button id="cout" type="button" class="invisible btn btn-danger button-w" onclick="checkclick(); getLocationOut()">Check-Out</button>
+        </div>
+      </section>
+      <p id="demo"></p>
+    </center>
+
+<script>
+window.onload = function() {
+  initializeLiff('2005475384-6ly5XnXJ');
+}
+
+const xurl = "https://script.google.com/macros/s/AKfycbySAv2xscQkbQYPxD3hRTpWDDD7Hed70BOzBddw9M3OCsEFJRnLXk2K0vgfPZhablX3NQ/exec";
+
+function initializeLiff(myLiffId) {
+    liff
+        .init({
+            liffId: myLiffId
+        })
+        .then(() => {
+            // checks();
+        })
+        .catch((err) => {
+        });
+}
+
+function checks(){
+    var today = new Date();
+    today.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
+
+    var hh = today.getHours();
+    var mm = today.getMinutes(); 
+
+    if(hh >= 0){
+        //document.getElementById("cin").classList.remove('invisible');
+        //document.getElementById("cout").classList.remove('invisible');
+    }else{
+        alert("ไม่สามารถเช็คอิน/เอาท์ได้ในช่วงเวลา 0.00-6.00 "+hh+":"+mm);
+        liff.closeWindow();  
+    }
+}
+
+function checkclick() {
+  document.getElementById("cin").classList.add('invisible');
+  document.getElementById("cout").classList.add('invisible');
+}
+
+function checkselect() {
+  var shift = document.getElementById("shiftSelect").value;
+
+  if (shift == ""){
+    document.getElementById("cin").classList.add('invisible');
+    document.getElementById("cout").classList.add('invisible');
+  } else {
+    document.getElementById("cin").classList.remove('invisible');
+    document.getElementById("cout").classList.remove('invisible');
+  }
+}
+
+//-Location-In-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  liff.getProfile().then(function(profile) {
+  
+    var uid = profile.userId;
+    var uname = profile.displayName;
+    var tlat = ""+position.coords.latitude;
+    var tlong = ""+position.coords.longitude;
+    var xos = liff.getOS();
+    var shift = document.getElementById("shiftSelect").value;
+    const checked = [...document.getElementsByName("select_loc")].find(e => e.checked);
+    var sloc = checked.value;
+
+    var xmlhttp = new XMLHttpRequest();
+    var theUrl = xurl+"?user="+uid+"&name="+uname+"&xos="+xos+"&sloc="+sloc+"&lat="+tlat+"&long="+tlong+"&ctype=IN&shift="+shift;
+    xmlhttp.open('GET', theUrl);
+    xmlhttp.send();
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          var jsonResponse = JSON.parse(this.responseText);
+      }
+      Swal.fire(jsonResponse.header, jsonResponse.desc, jsonResponse.alert).then(() => { liff.closeWindow(); });
+    }
+  });  
+}
+
+//-Location-Out-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function getLocationOut() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPositionOut);
+  } else { 
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPositionOut(position) {
+  liff.getProfile().then(function(profile) {
+
+    var uid = profile.userId;
+    var uname = profile.displayName;
+    var tlat = ""+position.coords.latitude;
+    var tlong = ""+position.coords.longitude;
+    var xos = liff.getOS();
+    var shift = document.getElementById("shiftSelect").value;
+    const checked = [...document.getElementsByName("select_loc")].find(e => e.checked);
+    var sloc = checked.value;
+
+    var xmlhttp = new XMLHttpRequest();
+    var theUrl = xurl+"?user="+uid+"&name="+uname+"&xos="+xos+"&sloc="+sloc+"&lat="+tlat+"&long="+tlong+"&ctype=OUT&shift="+shift;
+    xmlhttp.open('GET', theUrl);
+    xmlhttp.send();
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          var jsonResponse = JSON.parse(this.responseText);
+      }
+      Swal.fire(jsonResponse.header, jsonResponse.desc, jsonResponse.alert).then(() => { liff.closeWindow(); });
+    }});  
+}
+
+</script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.6/dist/sweetalert2.all.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
