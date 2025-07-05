@@ -40,19 +40,10 @@ option.mblue:hover {
 
 label {
   text-align: left;
-  width:50px;
   display: inline-block;
   color: white;
 }
 
 label.free {
   width:15px;
-}
-
-label.free2 {
-  width:100px;
-}
-
-label.free3 {
-  width:80px;
 }
